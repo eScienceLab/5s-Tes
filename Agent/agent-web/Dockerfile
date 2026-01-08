@@ -1,5 +1,6 @@
-# 1. Builder (amd64 only)
-FROM --platform=linux/amd64 node:20-alpine AS builder
+# 1. Builder
+ARG BUILDPLATFORM
+FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
 WORKDIR /app
 
 # Install deps
