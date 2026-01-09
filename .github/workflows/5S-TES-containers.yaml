@@ -5,7 +5,7 @@ on:
     # Only consider PRs that change files for this asset, including ci scripts
     paths:
       - '.github/workflows/5S-TES-containers.yaml'
-      - '5S-TES/**'
+      -  "Agent/agent-web/**"
   push:
     # Only release off of release and maintenance branches for this asset
     branches:
