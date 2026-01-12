@@ -32,7 +32,7 @@ export const handleLogout = async () => {
       fetchOptions: {
         onSuccess: () => {
           toast.success("Logged out successfully");
-          window.location.href = "/";
+          window.location.href = "/logged-out";
         },
       },
     });

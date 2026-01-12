@@ -11,6 +11,7 @@ export async function proxy(request: NextRequest) {
   // This is the recommended approach to optimistically redirect users
   // We recommend handling auth checks in each page/route
   if (!session) {
+    // All routes without a session should be redirected to the sign-in page (which will then redirect to Keycloak login page)
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
@@ -18,5 +19,18 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"], // Specify the routes the middleware applies to
+  matcher: [
+    /*
+     * Match all paths except for:
+     * 1. / index page
+     * 2. /api routes
+     * 3. /accounts/login
+     * 4. /_next (Next.js internals)
+     * 5. /sign-in (sign-in page)
+     * 6. /_static (inside /public)
+     * 7. all root files inside /public (e.g. /favicon.ico)
+     * 8. folder containing logos inside "public"
+     */
+    "/((?!api/|accounts/login|_next/|sign-in|logged-out|_static/|logos|[\\w-]+\\.\\w+).*)",
+  ],
 };
