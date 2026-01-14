@@ -1,6 +1,8 @@
 import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 import jwt from "jsonwebtoken";
+import { getKeycloakIssuer } from "./helpers";
+import { DecodedToken } from "@/types/core";
 
 const baseURL =
   process.env.BETTER_AUTH_URL ||
@@ -10,32 +12,43 @@ const baseURL =
 export const auth = betterAuth({
   baseURL,
   basePath: "/api/auth",
+  user: {
+    // add additional field (roles) to the user object
+    additionalFields: {
+      roles: {
+        type: "string",
+        array: true,
+      },
+    },
+  },
+  account: {
+    // the user account data (accessToken, idToken, refreshToken, etc.)
+    // will be updated on sign in with the latest data from the provider.
+    updateAccountOnSignIn: true,
+  },
   plugins: [
     genericOAuth({
       config: [
         {
           providerId: "keycloak",
-          clientId: process.env.KEYCLOAK_CLIENT_ID!,
-          clientSecret: process.env.KEYCLOAK_CLIENT_SECRET,
-          authorizationUrl: `${process.env.KEYCLOAK_URL}/realms/${process.env.KEYCLOAK_REALM}/`,
+          clientId: process.env.KEYCLOAK_CLIENT_ID || "",
+          clientSecret: process.env.KEYCLOAK_CLIENT_SECRET || "",
+          // Keycloak OAuth2 endpoints
+          authorizationUrl: `${getKeycloakIssuer()}/protocol/openid-connect/auth`,
+          tokenUrl: `${getKeycloakIssuer()}/protocol/openid-connect/token`,
+          userInfoUrl: `${getKeycloakIssuer()}/protocol/openid-connect/userinfo`,
           scopes: ["openid"],
           getUserInfo: async (tokens) => {
-            // Access provider-specific fields from raw token data
-            const decodedToken = jwt.decode(tokens.accessToken!) as any;
+            // Decode the access token to get user info
+            const decodedToken = jwt.decode(
+              tokens.accessToken!
+            ) as DecodedToken;
             return {
-              id: decodedToken.sub,
-              name: decodedToken.name,
-              email: decodedToken.email,
-              emailVerified: decodedToken.email_verified,
-              roles: decodedToken.roles,
-              permissions: decodedToken.permissions,
-              groups: decodedToken.groups,
-              clientRoles: decodedToken.clientRoles,
-              realmRoles: decodedToken.realmRoles,
-              clientId: decodedToken.clientId,
-              clientName: decodedToken.clientName,
-              clientDisplayName: decodedToken.clientDisplayName,
-              clientIcon: decodedToken.clientIcon,
+              id: decodedToken?.sub || "",
+              name: decodedToken?.name || "",
+              email: decodedToken?.email || "",
+              emailVerified: decodedToken?.email_verified || false,
+              roles: decodedToken?.realm_access?.roles || [],
             };
           },
         },
