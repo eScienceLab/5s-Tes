@@ -1,10 +1,15 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { AuthButton } from "@/components/auth-button";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
   const session = await auth.api.getSession({ headers: await headers() });
-  console.log(session);
+  if (!session?.user) {
+    return redirect("/sign-in");
+  } else if (session?.user && !session.user.roles.includes("dare-tre-admin")) {
+    return redirect("/forbidden?code=403");
+  }
 
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
