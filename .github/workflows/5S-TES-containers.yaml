@@ -4,16 +4,16 @@ on:
   pull_request:
     # Only consider PRs that change files for this asset, including ci scripts
     paths:
-      - '.github/workflows/5S-TES-containers.yaml'
-      -  "Agent/agent-web/**"
+      - ".github/workflows/5S-TES-containers.yaml"
+      - "Agent/agent-web/**"
   push:
     # Only release off of release and maintenance branches for this asset
     branches:
-      - 'main'
+      - "main"
     # Only consider pushes that change files for this asset, including ci scripts
     paths:
-      - '.github/workflows/5S-TES-containers.yaml'
-      -  "Agent/agent-web/**"
+      - ".github/workflows/5S-TES-containers.yaml"
+      - "Agent/agent-web/**"
 
 permissions:
   contents: write
@@ -40,8 +40,8 @@ jobs:
     uses: SwanseaUniversityMedical/workflows/.github/workflows/bulk-pr-and-release-container.yaml@v2.1.0-bulk-containers
     with:
       job-name: ui-container
-      comment-pr: 'true'
-      comment-release: 'true'
+      comment-pr: "true"
+      comment-release: "true"
       registry: ${{ vars.HARBOR_REGISTRY }}
       registry-user: ${{ vars.HARBOR_USER }}
       registry-repo: ${{ vars.HARBOR_PROJECT }}/${{ vars.HARBOR_REPO_AGENT_WEB }}
