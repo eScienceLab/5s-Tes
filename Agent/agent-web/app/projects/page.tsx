@@ -7,6 +7,7 @@ import { authcheck } from "@/lib/auth-helpers";
 import { getProjects } from "@/api/projects";
 import Link from "next/link";
 import { FetchError } from "@/components/core/fetch-error";
+import { Button } from "@/components/ui/button";
 
 interface ProjectsProps {
   searchParams?: Promise<{ showOnlyUnprocessed: boolean }>;
@@ -35,19 +36,25 @@ export default async function ProjectsPage(props: ProjectsProps) {
   }
   const projects = result.data;
 
+  const sortedProjects = [...projects].sort((a, b) => a.id - b.id);
+
   return (
     <>
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Projects</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
+        <p className="text-gray-600 dark:text-gray-400">
           List of projects on the connected{" "}
           <a
             href="https://docs.federated-analytics.ac.uk/submission"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold underline underline-offset-2"
           >
-            Submission layer
+            <Button
+              variant="link"
+              className="p-0 font-semibold text-md cursor-pointer"
+            >
+              Submission layer
+            </Button>
           </a>
           .
         </p>
@@ -76,7 +83,7 @@ export default async function ProjectsPage(props: ProjectsProps) {
             <div className="mx-auto max-w-7xl">
               <DataTable
                 columns={columns}
-                data={projects}
+                data={sortedProjects}
                 projectListingPage={true}
               />
             </div>
@@ -92,7 +99,7 @@ export default async function ProjectsPage(props: ProjectsProps) {
             <div className="mx-auto max-w-7xl">
               <DataTable
                 columns={columns}
-                data={projects}
+                data={sortedProjects}
                 projectListingPage={true}
               />
             </div>
